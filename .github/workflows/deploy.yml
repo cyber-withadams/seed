@@ -1,0 +1,36 @@
+name: Deploy Seedmove to Subdomain
+
+on:
+  push:
+    branches: [ master ]   # or 'main' if you changed it
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the site
+        run: npm run build
+
+      - name: Deploy via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 'serv7.shujaahost.co.ke'
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: './dist/'
+          server-dir: 'domains/seedmove.nyotacleaning.online/public_html/'
+          protocol: 'ftps'
+          port: 21
+          dangerous-clean-slate: true
